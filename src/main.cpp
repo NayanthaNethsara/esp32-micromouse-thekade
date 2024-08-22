@@ -31,7 +31,8 @@ float getAngle(float currentTime, float *prevTime, float currentAngle);
 // TCA9548A channel select function
 void tcaSelect(uint8_t i)
 {
-    if (i > 7) return;
+    if (i > 7)
+        return;
     Wire.beginTransmission(TCAADDR);
     Wire.write(1 << i);
     Wire.endTransmission();
@@ -69,7 +70,8 @@ float readGyroZ()
     Wire.endTransmission();
 
     Wire.requestFrom(L3G4200D_ADDRESS, 2);
-    while (Wire.available() < 2);
+    while (Wire.available() < 2)
+        ;
 
     uint8_t zL = Wire.read();
     uint8_t zH = Wire.read();
@@ -104,11 +106,11 @@ float getAngle(float currentTime, float *prevTime, float currentAngle)
         currentAngle += 360;
     }
 
-    // Reset the angle to zero if there's no significant rotation
-    if (fabs(zRotationRate) < 0.1)
-    {
-        currentAngle = 0;
-    }
+    // // Reset the angle to zero if there's no significant rotation
+    // if (fabs(zRotationRate) < 0.1)
+    // {
+    //     currentAngle = 0;
+    // }
 
     return currentAngle;
 }
@@ -123,14 +125,16 @@ void setup()
     if (!lox1.begin())
     {
         Serial.println(F("Failed to boot VL53L0X #1"));
-        while (1);
+        while (1)
+            ;
     }
 
     tcaSelect(1);
     if (!lox2.begin())
     {
         Serial.println(F("Failed to boot VL53L0X #2"));
-        while (1);
+        while (1)
+            ;
     }
 
     // Initialize the L3G4200D gyroscope
