@@ -20,7 +20,7 @@ unsigned long prevTime = 0;
 // Function declarations
 void initGyro();
 float readGyroZ();
-void calibrateGyroZ(int samples);
+//void calibrateGyroZ(int samples);
 
 // Function to select TCA9548A channel
 void tcaSelect(uint8_t i)
@@ -106,7 +106,7 @@ float readGyroZ()
   return zRotationRate;
 }
 
-void calibrateGyroZ(int samples)
+/*void calibrateGyroZ(int samples)
 {
   long sum = 0;
   for (int i = 0; i < samples; i++)
@@ -128,4 +128,4 @@ void calibrateGyroZ(int samples)
     delay(10); // Small delay to allow for stable readings
   }
   gyroZOffset = sum / (float)samples;
-}
+}*/
