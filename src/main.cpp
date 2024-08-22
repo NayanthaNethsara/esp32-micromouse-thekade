@@ -20,7 +20,7 @@ unsigned long prevTime = 0;
 // Function declarations
 void initGyro();
 float readGyroZ();
-void calibrateGyroZ(int samples = 100);
+void calibrateGyroZ(int samples);
 
 // Function to select TCA9548A channel
 void tcaSelect(uint8_t i)
@@ -38,11 +38,10 @@ void setup()
   Wire.begin();
 
   // Select the TCA9548A channel
-  tcaSelect(1);
+  tcaSelect(2);
 
   // Initialize the gyroscope
   initGyro();
-  calibrateGyroZ();
   // Initial time
   prevTime = millis();
 }
@@ -65,6 +64,8 @@ void loop()
 
   // Print the current angle for debugging
   Serial.print("Angle: ");
+  Serial.print(zRotationRate);
+  Serial.print(" |");
   Serial.println(angle);
   delay(50);
 }
@@ -94,16 +95,18 @@ float readGyroZ()
 
   int16_t z = (zH << 8) | zL;
 
-  // Subtract the calibrated offset
-  z -= gyroZOffset;
-
   // Convert to degrees per second
   float zRotationRate = z * 0.00875; // 0.00875 dps/LSB for 250 dps full scale
+
+  if (abs(zRotationRate) < 1.1)
+  {
+    zRotationRate = 0.0;
+  }
 
   return zRotationRate;
 }
 
-void calibrateGyroZ(int samples = 100)
+void calibrateGyroZ(int samples)
 {
   long sum = 0;
   for (int i = 0; i < samples; i++)
