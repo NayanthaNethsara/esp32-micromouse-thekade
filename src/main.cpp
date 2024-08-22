@@ -1,37 +1,48 @@
+#include <Arduino.h>
 #include <Wire.h>
-#include <Adafruit_VL53L0X.h>
+#include "UltrasonicSensor.h"
+#include "GyroscopeSensor.h"
+#include "CarController.h"
+#include <Structures.h>
 
-Adafruit_VL53L0X lox = Adafruit_VL53L0X();
+Car TheKade = {150, 0, 0, {0, 0}, 0, 0, 1.0};
+
+UltrasonicSensor leftUltrasonic(5, 6);
+UltrasonicSensor rightUltrasonic(10, 11);
+
+GyroscopeSensor Gyroscope;
+CarController Controller(TheKade); // Assuming a base speed of 150 and Kp gain of 1.0
 
 void setup()
 {
-  Serial.begin(115200);
-  Serial.println("Adafruit VL53L0X test");
-
-  if (!lox.begin())
-  {
-    Serial.println(F("Failed to boot VL53L0X"));
-    while (1)
-      ;
-  }
-  Serial.println(F("VL53L0X Ready"));
+    Serial.begin(9600);
+    Wire.begin();
+    Gyroscope.init();
+    leftUltrasonic.init();
+    rightUltrasonic.init();
+    Controller.init();
+    TheKade.prevTime = millis();
 }
 
 void loop()
 {
-  VL53L0X_RangingMeasurementData_t measure;
+    // Get current time
+    TheKade.currentTime = millis();
 
-  lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
+    // Calculate the angle using the gyroscope
+    // angle = gyro.getAngle(currentTime, &prevTime, angle);
 
-  if (measure.RangeStatus != 4)
-  { // phase failures have incorrect data
-    Serial.print("Distance (mm): ");
-    Serial.println(measure.RangeMilliMeter);
-  }
-  else
-  {
-    Serial.println("Out of range");
-  }
+    // // Print the current angle
+    // Serial.print("Angle: ");
+    // Serial.println(angle);
 
-  delay(100);
+    Serial.print("Right Distance: ");
+    Serial.println(rightUltrasonic.getDistance());
+
+    Serial.print("Left Distance: ");
+    Serial.println(leftUltrasonic.getDistance());
+
+    delay(1000);
+
+    // car.forward(leftUltrasonic.getDistance(), rightUltrasonic.getDistance());
 }
