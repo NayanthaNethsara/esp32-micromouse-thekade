@@ -11,7 +11,7 @@ public:
     int getDistance();
 
 private:
-    int analogPin;
+    int analogPin = 34;
 
     float analogToDistance(int analogValue);
 };

@@ -9,8 +9,8 @@
 
 Car TheKade = {150, 0, 0, {15, 0}, 0, 0, 1.0};
 
-UltrasonicSensor leftUltrasonic(5, 6);
-UltrasonicSensor rightUltrasonic(10, 11);
+UltrasonicSensor leftUltrasonic(5, 18);
+UltrasonicSensor rightUltrasonic(19, 23);
 
 GyroscopeSensor Gyroscope;
 CarController Controller(TheKade); // Assuming a base speed of 150 and Kp gain of 1.0
