@@ -4,14 +4,27 @@
 #include "GyroscopeSensor.h"
 #include "CarController.h"
 #include <Structures.h>
+#include <climits>
+#include <queue>
 
-Car TheKade = {150, 0, 0, {0, 0}, 0, 0, 1.0};
+Car TheKade = {150, 0, 0, {15, 0}, 0, 0, 1.0};
 
 UltrasonicSensor leftUltrasonic(5, 6);
 UltrasonicSensor rightUltrasonic(10, 11);
 
 GyroscopeSensor Gyroscope;
 CarController Controller(TheKade); // Assuming a base speed of 150 and Kp gain of 1.0
+
+int dx[4] = {-1, 1, 0, 0};
+int dy[4] = {0, 0, -1, 1};
+// Initialize a 2D array of Cell objects
+Cell cells[16][16];
+int flood[16][16];
+
+void initCells(Cell cells[16][16]);
+void initFloodFill();
+Cell walls(Coordinates currentPosition);
+int checkAdjacent(Coordinates currentPosition, Cell wall, int direction);
 
 void setup()
 {
@@ -26,23 +39,38 @@ void setup()
 
 void loop()
 {
-    // Get current time
-    TheKade.currentTime = millis();
+    initCells(cells);
+    initFloodFill();
+    int currentFlood = flood[TheKade.currentCoordinate.x][TheKade.currentCoordinate.y];
+    while (currentFlood != 0)
+    {
+        currentFlood = flood[TheKade.currentCoordinate.x][TheKade.currentCoordinate.y];
+        Cell wall = walls(TheKade.currentCoordinate);
 
-    // Calculate the angle using the gyroscope
-    // angle = gyro.getAngle(currentTime, &prevTime, angle);
+        int bestDirection = checkAdjacent(TheKade.currentCoordinate, wall, TheKade.direction);
 
-    // // Print the current angle
-    // Serial.print("Angle: ");
-    // Serial.println(angle);
+        if (bestDirection == -1)
+        {
+            initFloodFill();
+            bestDirection = checkAdjacent(TheKade.currentCoordinate, wall, TheKade.direction);
+        }
 
-    Serial.print("Right Distance: ");
-    Serial.println(rightUltrasonic.getDistance());
-
-    Serial.print("Left Distance: ");
-    Serial.println(leftUltrasonic.getDistance());
-
-    delay(1000);
-
-    // car.forward(leftUltrasonic.getDistance(), rightUltrasonic.getDistance());
+        switch (bestDirection)
+        {
+        case 0:
+            CarController.moveNorth();
+            break;
+        case 1:
+            CarController.moveEast();
+            break;
+        case 2:
+            CarController.moveSouth();
+            break;
+        case 3:
+            CarController.moveWest();
+            break;
+        default:
+            break;
+        }
+    }
 }

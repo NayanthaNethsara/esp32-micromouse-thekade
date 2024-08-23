@@ -83,3 +83,99 @@ void CarController::forwardTest(int speed)
     analogWrite(enA, speed);
     analogWrite(enB, speed);
 }
+
+void CarController::moveNorth(int direction)
+{
+    if (direction == 0)
+    {
+        moveForward();
+    }
+    else if (direction == 1)
+    {
+        turnLeft();
+        moveForward();
+    }
+    else if (direction == 2)
+    {
+        turnLeft();
+        turnLeft();
+        moveForward();
+    }
+    else if (direction == 3)
+    {
+        turnRight();
+        moveForward();
+    }
+}
+
+void CarController::moveEast(int direction)
+{
+    if (direction == 0)
+    {
+        turnRight();
+        moveForward();
+    }
+    else if (direction == 1)
+    {
+        moveForward();
+    }
+    else if (direction == 2)
+    {
+        turnLeft();
+        moveForward();
+    }
+    else if (direction == 3)
+    {
+        turnLeft();
+        turnLeft();
+        moveForward();
+    }
+}
+
+void CarController::moveSouth(int direction)
+{
+    if (direction == 0)
+    {
+        turnLeft();
+        turnLeft();
+        moveForward();
+    }
+    else if (direction == 1)
+    {
+        turnRight();
+        moveForward();
+    }
+    else if (direction == 2)
+    {
+        moveForward();
+    }
+    else if (direction == 3)
+    {
+        turnLeft();
+        moveForward();
+    }
+}
+
+void CarController::moveWest(int direction)
+{
+    if (direction == 0)
+    {
+        turnLeft();
+        moveForward();
+    }
+    else if (direction == 1)
+    {
+        turnLeft();
+        turnLeft();
+        moveForward();
+    }
+    else if (direction == 2)
+    {
+        turnRight();
+        moveForward();
+    }
+    else if (direction == 3)
+    {
+        moveForward();
+    }
+}

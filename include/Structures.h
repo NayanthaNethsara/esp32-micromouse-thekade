@@ -14,3 +14,11 @@ struct Car
     float currentTime;
     float correctionFactor;
 };
+
+struct Cell
+{
+    bool north;
+    bool east;
+    bool south;
+    bool west;
+};

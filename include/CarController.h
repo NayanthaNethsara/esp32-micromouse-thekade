@@ -35,6 +35,11 @@ public:
 
     // Function to stop the car
     void stop();
+
+    void moveNorth(int direction);
+    void moveEast(int direction);
+    void moveSouth(int direction);
+    void moveWest(int direction);
 };
 
 #endif // CARCONTROLLER_H
