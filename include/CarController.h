@@ -40,6 +40,11 @@ public:
     void moveEast(int direction);
     void moveSouth(int direction);
     void moveWest(int direction);
+
+    bool wallFront();
+    bool wallLeft();
+    bool wallRight();
+    bool wallBack();
 };
 
 #endif // CARCONTROLLER_H

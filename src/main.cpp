@@ -58,19 +58,127 @@ void loop()
         switch (bestDirection)
         {
         case 0:
-            CarController.moveNorth();
+            Controller.moveNorth(TheKade.direction);
             break;
         case 1:
-            CarController.moveEast();
+            Controller.moveEast(TheKade.direction);
             break;
         case 2:
-            CarController.moveSouth();
+            Controller.moveSouth(TheKade.direction);
             break;
         case 3:
-            CarController.moveWest();
+            Controller.moveWest(TheKade.direction);
             break;
         default:
             break;
         }
     }
+}
+
+void initCells(Cell cells[16][16])
+{
+    for (int i = 0; i < 16; i++)
+    {
+        for (int j = 0; j < 16; j++)
+        {
+            cells[i][j] = {false, false, false, false};
+        }
+    }
+}
+
+int checkAdjacent(Coordinates currentPosition, Cell wall, int direction)
+{
+    Coordinates north = {currentPosition.x - 1, currentPosition.y};
+    Coordinates east = {currentPosition.x, currentPosition.y + 1};
+    Coordinates south = {currentPosition.x + 1, currentPosition.y};
+    Coordinates west = {currentPosition.x, currentPosition.y - 1};
+
+    int currentFlood = flood[currentPosition.x][currentPosition.y];
+
+    int northFlood = (north.x >= 0) ? flood[north.x][north.y] : INT_MAX;
+    int eastFlood = (east.y < 16) ? flood[east.x][east.y] : INT_MAX;
+    int southFlood = (south.x < 16) ? flood[south.x][south.y] : INT_MAX;
+    int westFlood = (west.y >= 0) ? flood[west.x][west.y] : INT_MAX;
+
+    int bestDirection = -1;
+    int minFlood = currentFlood;
+
+    // Array of directions in clockwise order starting from the current direction
+    int directions[4] = {direction, (direction + 1) % 4, (direction + 2) % 4, (direction + 3) % 4};
+
+    for (int i = 0; i < 4; i++)
+    {
+        int currentDirection = directions[i];
+        switch (currentDirection)
+        {
+        case 0:
+            if (!wall.north && northFlood < minFlood)
+            {
+                bestDirection = 0;
+                minFlood = northFlood;
+            }
+            break;
+        case 1:
+            if (!wall.east && eastFlood < minFlood)
+            {
+                bestDirection = 1;
+                minFlood = eastFlood;
+            }
+            break;
+        case 2:
+            if (!wall.south && southFlood < minFlood)
+            {
+                bestDirection = 2;
+                minFlood = southFlood;
+            }
+            break;
+        case 3:
+            if (!wall.west && westFlood < minFlood)
+            {
+                bestDirection = 3;
+                minFlood = westFlood;
+            }
+            break;
+        }
+    }
+
+    return bestDirection;
+}
+
+Cell walls(Coordinates currentPosition)
+{
+    Cell wall;
+
+    // Check walls based on the current facing direction
+    switch (TheKade.direction)
+    {
+    case 0: // Facing North
+        wall.north = Controller.wallFront();
+        wall.east = Controller.wallRight();
+        wall.west = Controller.wallLeft();
+        wall.south = Controller.wallBack();
+        break;
+    case 1: // Facing East
+        wall.east = Controller.wallFront();
+        wall.south = Controller.wallRight();
+        wall.north = Controller.wallLeft();
+        wall.west = Controller.wallBack();
+        break;
+    case 2: // Facing South
+        wall.south = Controller.wallFront();
+        wall.west = Controller.wallRight();
+        wall.east = Controller.wallLeft();
+        wall.north = Controller.wallBack();
+        break;
+    case 3: // Facing West
+        wall.west = Controller.wallFront();
+        wall.north = Controller.wallRight();
+        wall.south = Controller.wallLeft();
+        wall.east = Controller.wallBack();
+        break;
+    }
+
+    cells[currentPosition.x][currentPosition.y] = wall;
+
+    return wall;
 }

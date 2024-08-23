@@ -84,27 +84,49 @@ void CarController::forwardTest(int speed)
     analogWrite(enB, speed);
 }
 
+// Functions to idencify walls
+bool CarController::wallFront()
+{
+    return false;
+}
+
+bool CarController::wallLeft()
+{
+    return false;
+}
+
+bool CarController::wallRight()
+{
+    return false;
+}
+
+bool CarController::wallBack()
+{
+    return false;
+}
+
+// Functions to move the car in the maze
 void CarController::moveNorth(int direction)
 {
     if (direction == 0)
     {
-        moveForward();
+        // moveForward();
     }
     else if (direction == 1)
     {
-        turnLeft();
-        moveForward();
+        // turnLeft();
+        // moveForward();
     }
     else if (direction == 2)
     {
-        turnLeft();
-        turnLeft();
-        moveForward();
+        // turnLeft();
+        // turnLeft();
+        // moveForward();
     }
     else if (direction == 3)
     {
-        turnRight();
-        moveForward();
+        // turnRight();
+        // moveForward();
     }
 }
 
@@ -112,23 +134,23 @@ void CarController::moveEast(int direction)
 {
     if (direction == 0)
     {
-        turnRight();
-        moveForward();
+        // turnRight();
+        // moveForward();
     }
     else if (direction == 1)
     {
-        moveForward();
+        // moveForward();
     }
     else if (direction == 2)
     {
-        turnLeft();
-        moveForward();
+        // turnLeft();
+        // moveForward();
     }
     else if (direction == 3)
     {
-        turnLeft();
-        turnLeft();
-        moveForward();
+        // turnLeft();
+        // turnLeft();
+        // moveForward();
     }
 }
 
@@ -136,23 +158,23 @@ void CarController::moveSouth(int direction)
 {
     if (direction == 0)
     {
-        turnLeft();
-        turnLeft();
-        moveForward();
+        // turnLeft();
+        // turnLeft();
+        // moveForward();
     }
     else if (direction == 1)
     {
-        turnRight();
-        moveForward();
+        // turnRight();
+        // moveForward();
     }
     else if (direction == 2)
     {
-        moveForward();
+        // moveForward();
     }
     else if (direction == 3)
     {
-        turnLeft();
-        moveForward();
+        // turnLeft();
+        // moveForward();
     }
 }
 
@@ -160,22 +182,22 @@ void CarController::moveWest(int direction)
 {
     if (direction == 0)
     {
-        turnLeft();
-        moveForward();
+        // turnLeft();
+        // moveForward();
     }
     else if (direction == 1)
     {
-        turnLeft();
-        turnLeft();
-        moveForward();
+        // turnLeft();
+        // turnLeft();
+        // moveForward();
     }
     else if (direction == 2)
     {
-        turnRight();
-        moveForward();
+        // turnRight();
+        // moveForward();
     }
     else if (direction == 3)
     {
-        moveForward();
+        // moveForward();
     }
 }
