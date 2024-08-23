@@ -2,18 +2,22 @@
 #define CARCONTROLLER_H
 
 #include <Arduino.h>
+#include <UltrasonicSensor.h>
 
 class CarController
 {
 private:
-    int in1 = 13;
-    int in2 = 12;
-    int in3 = 8;
-    int in4 = 7;
-    int enA = 10;
-    int enB = 9;
+    int in1 = 32;
+    int in2 = 33;
+    int in3 = 26;
+    int in4 = 27;
+    int enA = 25;
+    int enB = 14;
     int baseSpeed;
     int correctionFactor;
+
+    UltrasonicSensor leftUltrasonic = UltrasonicSensor(5, 18);
+    UltrasonicSensor rightUltrasonic = UltrasonicSensor(19, 23);
 
 public:
     // Constructor
@@ -23,7 +27,7 @@ public:
     void init();
 
     // Function to move forward with balancing
-    void forward(int leftDistance, int rightDistance);
+    void forward();
 
     void forwardTest(int speed);
 

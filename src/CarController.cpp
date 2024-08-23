@@ -20,8 +20,10 @@ void CarController::init()
 }
 
 // Function to move forward with balancing
-void CarController::forward(int leftDistance, int rightDistance)
+void CarController::forward()
 {
+    int leftDistance = leftUltrasonic.getDistance();
+    int rightDistance = rightUltrasonic.getDistance();
     int error = leftDistance - rightDistance;
     int speedLeft = baseSpeed - (error * correctionFactor);
     int speedRight = baseSpeed + (error * correctionFactor);
