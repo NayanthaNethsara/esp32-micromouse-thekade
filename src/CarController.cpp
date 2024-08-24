@@ -99,7 +99,7 @@ void CarController::stop()
 bool CarController::wallFront()
 {
     int distance = timeOfFlight.getDistance(0); // Use sensor 0 (front)
-    return distance < frontThreshold; // Adjust threshold as needed
+    return distance < frontThreshold;           // Adjust threshold as needed
 }
 
 // Function to identify if there is a wall on the left
@@ -120,7 +120,7 @@ bool CarController::wallRight()
 bool CarController::wallBack()
 {
     int distance = timeOfFlight.getDistance(1); // Use sensor 1 (back)
-    return distance < backThreshold; // Adjust threshold as needed
+    return distance < backThreshold;            // Adjust threshold as needed
 }
 
 // Function to calculate the current cell in the maze
@@ -154,12 +154,12 @@ void CarController::printTimeOfFlightValues()
     int backDistance = timeOfFlight.getDistance(1);  // Back sensor
 
     Serial.print("Front Sensor Distance: ");
-    Serial.print(frontDistance);
-    Serial.println(" mm");
+    Serial.print(frontDistance / 10);
+    Serial.println(" cm");
 
     Serial.print("Back Sensor Distance: ");
-    Serial.print(backDistance);
-    Serial.println(" mm");
+    Serial.print(backDistance / 10);
+    Serial.println(" cm");
 }
 
 // Functions to move the car in the maze
