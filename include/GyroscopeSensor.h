@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <Wire.h>
+#include "SerialMultiplexer.h"
 
 class GyroscopeSensor
 {
@@ -19,6 +20,8 @@ private:
     const int L3G4200D_CTRL_REG1 = 0x20;
     const int L3G4200D_OUT_Z_L = 0x2C;
     const int L3G4200D_OUT_Z_H = 0x2D;
+
+    SerialMultiplexer i2cMultiplexer;
 
     float zOffset = 0;
 
