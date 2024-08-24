@@ -8,7 +8,7 @@ class UltrasonicSensor
 public:
     UltrasonicSensor(int trigPin, int echoPin);
     void init();
-    int getDistance();
+    float getDistance();
 
 private:
     int trigPin;

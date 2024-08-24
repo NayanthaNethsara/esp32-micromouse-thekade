@@ -29,7 +29,7 @@ int checkAdjacent(Coordinates currentPosition, Cell wall, int direction);
 void setup()
 {
     Serial.begin(115200);
-    // Wire.begin();
+    Wire.begin();
     // // Gyroscope.init();
     Controller.init();
     TheKade.prevTime = millis();
@@ -38,6 +38,7 @@ void setup()
 void loop()
 {
     Controller.moveForward();
+    delay(1000);
 }
 
 void initCells(Cell cells[16][16])

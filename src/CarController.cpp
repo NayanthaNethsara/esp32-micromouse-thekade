@@ -18,55 +18,105 @@ void CarController::init()
     pinMode(enB, OUTPUT); // left motor
     leftUltrasonic.init();
     rightUltrasonic.init();
+    Gyroscope.init();
 }
 
 void CarController::moveForward()
 {
-    int leftDistance = leftUltrasonic.getDistance();   // Distance from the left wall
-    int rightDistance = rightUltrasonic.getDistance(); // Distance from the right wall
+    static float prevTime = millis();
 
-    // Desired distance from each wall is 2cm (with a tolerance of 1cm)
-    int targetDistance = 2;
-    int tolerance = 1;
+    static float currentAngle = 0;
 
-    int leftSpeed = baseSpeed;
-    int rightSpeed = baseSpeed;
+    unsigned long startTime = millis();
+    unsigned long duration = 5000; // 5 seconds duration
 
-    // Adjust speed based on the distance from the walls
-    if (leftDistance < targetDistance - tolerance)
+    while (millis() - startTime < duration)
     {
-        // Too close to the left wall, slow down left motor or speed up right motor
-        leftSpeed = baseSpeed - 50;
-        rightSpeed = baseSpeed + 50;
-    }
-    else if (leftDistance > targetDistance + tolerance)
-    {
-        // Too far from the left wall, speed up left motor or slow down right motor
-        leftSpeed = baseSpeed + 50;
-        rightSpeed = baseSpeed - 50;
+        unsigned long currentTime = millis();
+
+        int leftDistance = leftUltrasonic.getDistance();   // Distance from the left wall
+        int rightDistance = rightUltrasonic.getDistance(); // Distance from the right wall
+
+        // Get the current angle from the gyroscope
+        currentAngle = Gyroscope.getAngle(currentTime, &prevTime, currentAngle);
+
+        // Desired distance from each wall is 2cm (with a tolerance of 1cm)
+        int targetDistance = 2;
+        int tolerance = 1;
+
+        int leftSpeed = baseSpeed;
+        int rightSpeed = baseSpeed;
+
+        // Adjust speed based on the distance from the walls
+        if (leftDistance < targetDistance - tolerance)
+        {
+            // Too close to the left wall, slow down left motor or speed up right motor
+            leftSpeed = baseSpeed - 50;
+            rightSpeed = baseSpeed + 50;
+        }
+        else if (leftDistance > targetDistance + tolerance)
+        {
+            // Too far from the left wall, speed up left motor or slow down right motor
+            leftSpeed = baseSpeed + 50;
+            rightSpeed = baseSpeed - 50;
+        }
+
+        if (rightDistance < targetDistance - tolerance)
+        {
+            // Too close to the right wall, slow down right motor or speed up left motor
+            leftSpeed = baseSpeed + 50;
+            rightSpeed = baseSpeed - 50;
+        }
+        else if (rightDistance > targetDistance + tolerance)
+        {
+            // Too far from the right wall, speed up right motor or slow down left motor
+            leftSpeed = baseSpeed - 50;
+            rightSpeed = baseSpeed + 50;
+        }
+
+        // Adjust speed based on the gyroscope angle to maintain straight movement
+        if (currentAngle > 5) // Adjust the threshold angle as needed
+        {
+            // If the car is veering to the right, correct by slowing down the right motor
+            leftSpeed += 50;
+            rightSpeed -= 50;
+        }
+        else if (currentAngle < -5) // Adjust the threshold angle as needed
+        {
+            // If the car is veering to the left, correct by slowing down the left motor
+            leftSpeed -= 50;
+            rightSpeed += 50;
+        }
+
+        Serial.print("Angle: ");
+        Serial.println(currentAngle);
+        Serial.print("Left Distance: ");
+        Serial.println(leftDistance);
+        Serial.print("Right Distance: ");
+        Serial.println(rightDistance);
+        Serial.print("Left Speed: ");
+        Serial.println(leftSpeed);
+        Serial.print("Right Speed: ");
+        Serial.println(rightSpeed);
+
+        // Move the car forward with the adjusted speeds
+        // digitalWrite(in1, HIGH);
+        // digitalWrite(in2, LOW);
+        // digitalWrite(in3, HIGH);
+        // digitalWrite(in4, LOW);
+
+        // analogWrite(enA, leftSpeed);
+        // analogWrite(enB, rightSpeed);
+
+        // Small delay to allow sensor readings to update
+        delay(10);
     }
 
-    if (rightDistance < targetDistance - tolerance)
-    {
-        // Too close to the right wall, slow down right motor or speed up left motor
-        leftSpeed = baseSpeed + 50;
-        rightSpeed = baseSpeed - 50;
-    }
-    else if (rightDistance > targetDistance + tolerance)
-    {
-        // Too far from the right wall, speed up right motor or slow down left motor
-        leftSpeed = baseSpeed - 50;
-        rightSpeed = baseSpeed + 50;
-    }
-
-    // Move the car forward with the adjusted speeds
-    digitalWrite(in1, HIGH);
+    // Stop the car after 5 seconds
+    digitalWrite(in1, LOW);
     digitalWrite(in2, LOW);
-    digitalWrite(in3, HIGH);
+    digitalWrite(in3, LOW);
     digitalWrite(in4, LOW);
-
-    analogWrite(enA, leftSpeed);
-    analogWrite(enB, rightSpeed);
 }
 
 // Function to move forward with balancing
