@@ -15,8 +15,8 @@ private:
     int enB = 9;
     int baseSpeed;
     int correctionFactor;
-    UltrasonicSensor leftUltrasonic{5, 6};
-    UltrasonicSensor rightUltrasonic{10, 11};
+    UltrasonicSensor leftUltrasonic{5, 18};
+    UltrasonicSensor rightUltrasonic{19, 23};
 
 public:
     // Constructor
