@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "climits": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "vector": "cpp"
     }
 }

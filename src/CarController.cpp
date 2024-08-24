@@ -1,14 +1,13 @@
 #include "CarController.h"
-#include <Structures.h>
 
 // Constructor
-CarController::CarController(Car car)
+CarController::CarController(int speed, int correctionFactor)
 {
-    baseSpeed = car.speed;
-    correctionFactor = car.correctionFactor;
+    baseSpeed = speed;
+    this->correctionFactor = correctionFactor;
 }
 
-// initialize the motor pins
+// Initialize the motor pins
 void CarController::init()
 {
     pinMode(in1, OUTPUT);
@@ -17,6 +16,8 @@ void CarController::init()
     pinMode(in4, OUTPUT);
     pinMode(enA, OUTPUT);
     pinMode(enB, OUTPUT);
+    leftUltrasonic.init();
+    rightUltrasonic.init();
 }
 
 // Function to move forward with balancing
@@ -36,6 +37,18 @@ void CarController::forward(int leftDistance, int rightDistance)
 
     analogWrite(enA, speedLeft);
     analogWrite(enB, speedRight);
+}
+
+// Function to test forward movement
+void CarController::forwardTest(int speed)
+{
+    digitalWrite(in1, HIGH);
+    digitalWrite(in2, LOW);
+    digitalWrite(in3, HIGH);
+    digitalWrite(in4, LOW);
+
+    analogWrite(enA, speed);
+    analogWrite(enB, speed);
 }
 
 // Function to turn left by a specific angle
@@ -73,35 +86,36 @@ void CarController::stop()
     analogWrite(enB, 0);
 }
 
-void CarController::forwardTest(int speed)
-{
-    digitalWrite(in1, HIGH);
-    digitalWrite(in2, LOW);
-    digitalWrite(in3, HIGH);
-    digitalWrite(in4, LOW);
-
-    analogWrite(enA, speed);
-    analogWrite(enB, speed);
-}
-
-// Functions to idencify walls
+// Functions to identify walls (Stub - Add actual sensor logic)
 bool CarController::wallFront()
 {
+    // Implement wall detection logic
     return false;
 }
 
 bool CarController::wallLeft()
 {
-    return false;
+    int Distance = leftUltrasonic.getDistance();
+
+    if (Distance < 10)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 bool CarController::wallRight()
 {
+    // Implement wall detection logic
     return false;
 }
 
 bool CarController::wallBack()
 {
+    // Implement wall detection logic
     return false;
 }
 
@@ -110,23 +124,22 @@ void CarController::moveNorth(int direction)
 {
     if (direction == 0)
     {
-        // moveForward();
+        forwardTest(baseSpeed); // Move forward
     }
     else if (direction == 1)
     {
-        // turnLeft();
-        // moveForward();
+        turnLeft(90);
+        forwardTest(baseSpeed);
     }
     else if (direction == 2)
     {
-        // turnLeft();
-        // turnLeft();
-        // moveForward();
+        turnLeft(180);
+        forwardTest(baseSpeed);
     }
     else if (direction == 3)
     {
-        // turnRight();
-        // moveForward();
+        turnRight(90);
+        forwardTest(baseSpeed);
     }
 }
 
@@ -134,23 +147,22 @@ void CarController::moveEast(int direction)
 {
     if (direction == 0)
     {
-        // turnRight();
-        // moveForward();
+        turnRight(90);
+        forwardTest(baseSpeed);
     }
     else if (direction == 1)
     {
-        // moveForward();
+        forwardTest(baseSpeed);
     }
     else if (direction == 2)
     {
-        // turnLeft();
-        // moveForward();
+        turnLeft(90);
+        forwardTest(baseSpeed);
     }
     else if (direction == 3)
     {
-        // turnLeft();
-        // turnLeft();
-        // moveForward();
+        turnLeft(180);
+        forwardTest(baseSpeed);
     }
 }
 
@@ -158,23 +170,22 @@ void CarController::moveSouth(int direction)
 {
     if (direction == 0)
     {
-        // turnLeft();
-        // turnLeft();
-        // moveForward();
+        turnLeft(180);
+        forwardTest(baseSpeed);
     }
     else if (direction == 1)
     {
-        // turnRight();
-        // moveForward();
+        turnRight(90);
+        forwardTest(baseSpeed);
     }
     else if (direction == 2)
     {
-        // moveForward();
+        forwardTest(baseSpeed);
     }
     else if (direction == 3)
     {
-        // turnLeft();
-        // moveForward();
+        turnLeft(90);
+        forwardTest(baseSpeed);
     }
 }
 
@@ -182,22 +193,21 @@ void CarController::moveWest(int direction)
 {
     if (direction == 0)
     {
-        // turnLeft();
-        // moveForward();
+        turnLeft(90);
+        forwardTest(baseSpeed);
     }
     else if (direction == 1)
     {
-        // turnLeft();
-        // turnLeft();
-        // moveForward();
+        turnLeft(180);
+        forwardTest(baseSpeed);
     }
     else if (direction == 2)
     {
-        // turnRight();
-        // moveForward();
+        turnRight(90);
+        forwardTest(baseSpeed);
     }
     else if (direction == 3)
     {
-        // moveForward();
+        forwardTest(baseSpeed);
     }
 }

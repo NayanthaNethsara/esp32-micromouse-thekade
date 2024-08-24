@@ -2,6 +2,7 @@
 #define CARCONTROLLER_H
 
 #include <Arduino.h>
+#include "ultrasonicSensor.h"
 
 class CarController
 {
@@ -14,10 +15,12 @@ private:
     int enB = 9;
     int baseSpeed;
     int correctionFactor;
+    UltrasonicSensor leftUltrasonic{5, 6};
+    UltrasonicSensor rightUltrasonic{10, 11};
 
 public:
     // Constructor
-    CarController(Car car);
+    CarController(int speed, int correctionFactor);
 
     // initialize the motor pins
     void init();
@@ -25,6 +28,7 @@ public:
     // Function to move forward with balancing
     void forward(int leftDistance, int rightDistance);
 
+    // Function to test forward movement
     void forwardTest(int speed);
 
     // Function to turn left by a specific angle
@@ -36,15 +40,17 @@ public:
     // Function to stop the car
     void stop();
 
-    void moveNorth(int direction);
-    void moveEast(int direction);
-    void moveSouth(int direction);
-    void moveWest(int direction);
-
+    // Functions to identify walls
     bool wallFront();
     bool wallLeft();
     bool wallRight();
     bool wallBack();
+
+    // Functions to move the car in the maze
+    void moveNorth(int direction);
+    void moveEast(int direction);
+    void moveSouth(int direction);
+    void moveWest(int direction);
 };
 
 #endif // CARCONTROLLER_H

@@ -6,14 +6,14 @@
 #include <Structures.h>
 #include <climits>
 #include <queue>
+#include <vector>
+
+using namespace std;
 
 Car TheKade = {150, 0, 0, {15, 0}, 0, 0, 1.0};
 
-UltrasonicSensor leftUltrasonic(5, 6);
-UltrasonicSensor rightUltrasonic(10, 11);
-
 GyroscopeSensor Gyroscope;
-CarController Controller(TheKade); // Assuming a base speed of 150 and Kp gain of 1.0
+CarController Controller(TheKade.speed, TheKade.correctionFactor); // Assuming a base speed of 150 and Kp gain of 1.0
 
 int dx[4] = {-1, 1, 0, 0};
 int dy[4] = {0, 0, -1, 1};
@@ -31,8 +31,6 @@ void setup()
     Serial.begin(9600);
     Wire.begin();
     Gyroscope.init();
-    leftUltrasonic.init();
-    rightUltrasonic.init();
     Controller.init();
     TheKade.prevTime = millis();
 }
@@ -181,4 +179,66 @@ Cell walls(Coordinates currentPosition)
     cells[currentPosition.x][currentPosition.y] = wall;
 
     return wall;
+}
+
+void initFloodFill()
+{
+    // Initialize all flood values to a very high value (effectively infinity)
+    for (int i = 0; i < 16; i++)
+    {
+        for (int j = 0; j < 16; j++)
+        {
+            flood[i][j] = INT_MAX;
+        }
+    }
+
+    queue<Coordinates> q;
+    vector<pair<int, int>> centerPoints = {{7, 7}, {7, 8}, {8, 7}, {8, 8}};
+
+    // Initialize the center points with a distance of 0
+    for (auto &point : centerPoints)
+    {
+        flood[point.first][point.second] = 0;
+        q.push({point.first, point.second});
+    }
+
+    // Directions corresponding to {north, east, south, west}
+    int dx[4] = {-1, 0, 1, 0};
+    int dy[4] = {0, 1, 0, -1};
+
+    while (!q.empty())
+    {
+        int x = q.front().x;
+        int y = q.front().y;
+        int distance = flood[x][y];
+        q.pop();
+
+        for (int i = 0; i < 4; i++)
+        {
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+
+            // Check if the new coordinates are within bounds
+            if (nx >= 0 && nx < 16 && ny >= 0 && ny < 16)
+            {
+                bool canMove = false;
+
+                // Check for walls in the current cell for the intended direction
+                if (i == 0 && !cells[x][y].north && !cells[nx][ny].south)
+                    canMove = true; // Moving north
+                if (i == 1 && !cells[x][y].east && !cells[nx][ny].west)
+                    canMove = true; // Moving east
+                if (i == 2 && !cells[x][y].south && !cells[nx][ny].north)
+                    canMove = true; // Moving south
+                if (i == 3 && !cells[x][y].west && !cells[nx][ny].east)
+                    canMove = true; // Moving west
+
+                if (canMove && flood[nx][ny] > distance + 1)
+                {
+                    flood[nx][ny] = distance + 1;
+                    q.push({nx, ny});
+                }
+            }
+        }
+    }
 }
