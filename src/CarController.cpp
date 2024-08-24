@@ -96,7 +96,8 @@ bool CarController::wallFront()
 bool CarController::wallLeft()
 {
     int Distance = leftUltrasonic.getDistance();
-
+    Serial.print("Distance Left: ");
+    Serial.println(Distance);
     if (Distance < 10)
     {
         return true;
@@ -109,8 +110,17 @@ bool CarController::wallLeft()
 
 bool CarController::wallRight()
 {
-    // Implement wall detection logic
-    return false;
+    int Distance = rightUltrasonic.getDistance();
+    Serial.print("Distance Right: ");
+    Serial.println(Distance);
+    if (Distance < 10)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 bool CarController::wallBack()

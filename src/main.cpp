@@ -28,49 +28,18 @@ int checkAdjacent(Coordinates currentPosition, Cell wall, int direction);
 
 void setup()
 {
-    Serial.begin(9600);
-    Wire.begin();
-    Gyroscope.init();
+    Serial.begin(115200);
+    // Wire.begin();
+    // // Gyroscope.init();
     Controller.init();
     TheKade.prevTime = millis();
 }
 
 void loop()
 {
-    initCells(cells);
-    initFloodFill();
-    int currentFlood = flood[TheKade.currentCoordinate.x][TheKade.currentCoordinate.y];
-    while (currentFlood != 0)
-    {
-        currentFlood = flood[TheKade.currentCoordinate.x][TheKade.currentCoordinate.y];
-        Cell wall = walls(TheKade.currentCoordinate);
 
-        int bestDirection = checkAdjacent(TheKade.currentCoordinate, wall, TheKade.direction);
-
-        if (bestDirection == -1)
-        {
-            initFloodFill();
-            bestDirection = checkAdjacent(TheKade.currentCoordinate, wall, TheKade.direction);
-        }
-
-        switch (bestDirection)
-        {
-        case 0:
-            Controller.moveNorth(TheKade.direction);
-            break;
-        case 1:
-            Controller.moveEast(TheKade.direction);
-            break;
-        case 2:
-            Controller.moveSouth(TheKade.direction);
-            break;
-        case 3:
-            Controller.moveWest(TheKade.direction);
-            break;
-        default:
-            break;
-        }
-    }
+    Controller.wallLeft();
+    Controller.wallRight();
 }
 
 void initCells(Cell cells[16][16])
