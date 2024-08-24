@@ -7,7 +7,7 @@ CarController::CarController(int speed, int correctionFactor)
     this->correctionFactor = correctionFactor;
 }
 
-// Initialize the motor pins
+// Initialize the motor pins and sensors
 void CarController::init()
 {
     pinMode(in1, OUTPUT); // right motor
@@ -16,8 +16,11 @@ void CarController::init()
     pinMode(in4, OUTPUT);
     pinMode(enA, OUTPUT); // right motor
     pinMode(enB, OUTPUT); // left motor
+
+    // Initialize the sensors
     leftUltrasonic.init();
     rightUltrasonic.init();
+    timeOfFlight.init();
     Gyroscope.init();
 }
 
@@ -185,47 +188,71 @@ void CarController::stop()
     analogWrite(enB, 0);
 }
 
-// Functions to identify walls (Stub - Add actual sensor logic)
+// Function to identify if there is a wall in front
 bool CarController::wallFront()
 {
-    // Implement wall detection logic
-    return false;
+    int distance = timeOfFlight.getDistance(0); // Use sensor 0 (front)
+    return distance < frontThreshold;           // Adjust threshold as needed
 }
 
+// Function to identify if there is a wall on the left
 bool CarController::wallLeft()
 {
-    int Distance = leftUltrasonic.getDistance();
-    Serial.print("Distance Left: ");
-    Serial.println(Distance);
-    if (Distance < 10)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    int distance = leftUltrasonic.getDistance();
+    return distance < leftThreshold; // Adjust threshold as needed
 }
 
+// Function to identify if there is a wall on the right
 bool CarController::wallRight()
 {
-    int Distance = rightUltrasonic.getDistance();
-    Serial.print("Distance Right: ");
-    Serial.println(Distance);
-    if (Distance < 10)
+    int distance = rightUltrasonic.getDistance();
+    return distance < rightThreshold; // Adjust threshold as needed
+}
+
+// Function to identify if there is a wall at the back
+bool CarController::wallBack()
+{
+    int distance = timeOfFlight.getDistance(1); // Use sensor 1 (back)
+    return distance < backThreshold;            // Adjust threshold as needed
+}
+
+// Function to calculate the current cell in the maze
+int CarController::getCurrentCell()
+{
+    int frontDistance = timeOfFlight.getDistance(0); // Front sensor
+    int backDistance = timeOfFlight.getDistance(1);  // Back sensor
+
+    // Example logic to determine the current cell based on distances
+    if (frontDistance < 100 && backDistance < 100)
     {
-        return true;
+        return 1; // Example: Current cell ID 1
+    }
+    else if (frontDistance < 100)
+    {
+        return 2; // Example: Current cell ID 2
+    }
+    else if (backDistance < 100)
+    {
+        return 3; // Example: Current cell ID 3
     }
     else
     {
-        return false;
+        return 0; // Default cell (no walls nearby)
     }
 }
 
-bool CarController::wallBack()
+void CarController::printTimeOfFlightValues()
 {
-    // Implement wall detection logic
-    return false;
+    int frontDistance = timeOfFlight.getDistance(0); // Front sensor
+    int backDistance = timeOfFlight.getDistance(1);  // Back sensor
+
+    Serial.print("Front Sensor Distance: ");
+    Serial.print(frontDistance / 10);
+    Serial.println(" cm");
+
+    Serial.print("Back Sensor Distance: ");
+    Serial.print(backDistance / 10);
+    Serial.println(" cm");
 }
 
 // Functions to move the car in the maze

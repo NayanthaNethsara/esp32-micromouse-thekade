@@ -3,6 +3,7 @@
 #include "UltrasonicSensor.h"
 #include "GyroscopeSensor.h"
 #include "CarController.h"
+#include "TimeOfFlightSensor.h"
 #include <Structures.h>
 #include <climits>
 #include <queue>
@@ -13,6 +14,7 @@ using namespace std;
 Car TheKade = {150, 0, 0, {15, 0}, 0, 0, 1.0};
 
 GyroscopeSensor Gyroscope;
+TimeOfFlightSensor TimeOfFlight;
 CarController Controller(TheKade.speed, TheKade.correctionFactor); // Assuming a base speed of 150 and Kp gain of 1.0
 
 int dx[4] = {-1, 1, 0, 0};
@@ -37,7 +39,20 @@ void setup()
 
 void loop()
 {
-    Controller.moveForward();
+
+    // Controller.wallLeft();
+    // Controller.wallRight();
+    // Controller.forwardTest(TheKade.speed);
+
+    // Coordinates currentCell = Controller.getCurrentCell();
+    // TheKade.position = currentCell;
+
+    // Serial.print("Current Cell: (");
+    // Serial.print(currentCell.x);
+    // Serial.print(", ");
+    // Serial.print(currentCell.y);
+    // Serial.println(")");
+    Controller.printTimeOfFlightValues();
     delay(1000);
 }
 
