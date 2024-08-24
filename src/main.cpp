@@ -38,22 +38,23 @@ void setup()
 
 void loop()
 {
+    static float prevTime = millis(); // To store the previous time
+    static float currentAngle = 0;    // To store the current angle
 
-    // Controller.wallLeft();
-    // Controller.wallRight();
-    // Controller.forwardTest(TheKade.speed);
+    // Get the current time
+    unsigned long currentTime = millis();
 
-    // Coordinates currentCell = Controller.getCurrentCell();
-    // TheKade.position = currentCell;
+    // Get the current angle from the gyroscope
+    currentAngle = Gyroscope.getAngle(currentTime, &prevTime, currentAngle);
 
-    // Serial.print("Current Cell: (");
-    // Serial.print(currentCell.x);
-    // Serial.print(", ");
-    // Serial.print(currentCell.y);
-    // Serial.println(")");
-    Controller.printTimeOfFlightValues();
-    delay(1000);
+    // Print the current angle
+    Serial.print("Current Angle: ");
+    Serial.println(currentAngle);
+
+    // Small delay to avoid flooding the serial monitor
+    delay(100);
 }
+
 
 void initCells(Cell cells[16][16])
 {
