@@ -7,12 +7,12 @@
 class CarController
 {
 private:
-    int in1 = 13;
-    int in2 = 12;
-    int in3 = 8;
-    int in4 = 7;
-    int enA = 10;
-    int enB = 9;
+    int in1 = 32;
+    int in2 = 33;
+    int in3 = 26;
+    int in4 = 27;
+    int enA = 25;
+    int enB = 14;
     int baseSpeed;
     int correctionFactor;
     UltrasonicSensor leftUltrasonic{5, 18};
