@@ -22,16 +22,51 @@ void CarController::init()
 
 void CarController::moveForward()
 {
-    int leftDistance = rightUltrasonic.getDistance();
-    int rightDistance = leftUltrasonic.getDistance();
+    int leftDistance = leftUltrasonic.getDistance();   // Distance from the left wall
+    int rightDistance = rightUltrasonic.getDistance(); // Distance from the right wall
 
+    // Desired distance from each wall is 2cm (with a tolerance of 1cm)
+    int targetDistance = 2;
+    int tolerance = 1;
+
+    int leftSpeed = baseSpeed;
+    int rightSpeed = baseSpeed;
+
+    // Adjust speed based on the distance from the walls
+    if (leftDistance < targetDistance - tolerance)
+    {
+        // Too close to the left wall, slow down left motor or speed up right motor
+        leftSpeed = baseSpeed - 50;
+        rightSpeed = baseSpeed + 50;
+    }
+    else if (leftDistance > targetDistance + tolerance)
+    {
+        // Too far from the left wall, speed up left motor or slow down right motor
+        leftSpeed = baseSpeed + 50;
+        rightSpeed = baseSpeed - 50;
+    }
+
+    if (rightDistance < targetDistance - tolerance)
+    {
+        // Too close to the right wall, slow down right motor or speed up left motor
+        leftSpeed = baseSpeed + 50;
+        rightSpeed = baseSpeed - 50;
+    }
+    else if (rightDistance > targetDistance + tolerance)
+    {
+        // Too far from the right wall, speed up right motor or slow down left motor
+        leftSpeed = baseSpeed - 50;
+        rightSpeed = baseSpeed + 50;
+    }
+
+    // Move the car forward with the adjusted speeds
     digitalWrite(in1, HIGH);
     digitalWrite(in2, LOW);
     digitalWrite(in3, HIGH);
     digitalWrite(in4, LOW);
 
-    analogWrite(enA, baseSpeed);
-    analogWrite(enB, baseSpeed);
+    analogWrite(enA, leftSpeed);
+    analogWrite(enB, rightSpeed);
 }
 
 // Function to move forward with balancing

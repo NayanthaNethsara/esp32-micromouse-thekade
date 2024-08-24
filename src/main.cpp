@@ -37,10 +37,7 @@ void setup()
 
 void loop()
 {
-
-    Controller.wallLeft();
-    Controller.wallRight();
-    Controller.forwardTest(TheKade.speed);
+    Controller.moveForward();
 }
 
 void initCells(Cell cells[16][16])
