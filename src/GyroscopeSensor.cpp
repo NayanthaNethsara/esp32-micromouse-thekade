@@ -3,8 +3,8 @@
 
 void GyroscopeSensor::init()
 {
-    i2cMultiplexer.tcaSelect(2); // Select the channel connected to the gyroscope   
-    
+    i2cMultiplexer.tcaSelect(2); // Select the channel connected to the gyroscope
+
     // Set CTRL_REG1 to configure the gyroscope
     Wire.beginTransmission(L3G4200D_ADDRESS);
     Wire.write(L3G4200D_CTRL_REG1);
@@ -14,8 +14,8 @@ void GyroscopeSensor::init()
 
 void GyroscopeSensor::calibrateGyro()
 {
-    i2cMultiplexer.tcaSelect(2); // Select the channel connected to the gyroscope   
-    
+    i2cMultiplexer.tcaSelect(2); // Select the channel connected to the gyroscope
+
     const int numSamples = 1000;
     long totalZ = 0;
 
@@ -30,8 +30,8 @@ void GyroscopeSensor::calibrateGyro()
 
 float GyroscopeSensor::readGyroZ()
 {
-    i2cMultiplexer.tcaSelect(2); // Select the channel connected to the gyroscope   
-    
+    i2cMultiplexer.tcaSelect(2); // Select the channel connected to the gyroscope
+
     // Existing code to read the Z-axis rotation rate
     Wire.beginTransmission(L3G4200D_ADDRESS);
     Wire.write(L3G4200D_OUT_Z_L | 0x80); // Set auto-increment bit
@@ -47,14 +47,19 @@ float GyroscopeSensor::readGyroZ()
     int16_t z = (zH << 8) | zL;
 
     // Convert to degrees per second and subtract the offset
-    float zRotationRate = (z * 0.00875) - zOffset; // Adjust for offset
+    float zRotationRate = (z * 0.00875); // Adjust for offset
+
+    if (abs(zRotationRate) < 0.1)
+    {
+        zRotationRate = 0;
+    }
 
     return zRotationRate;
 }
 
 float GyroscopeSensor::getAngle(float currentTime, float *prevTime, float currentAngle)
 {
-    i2cMultiplexer.tcaSelect(2); // Select the channel connected to the gyroscope   
+    i2cMultiplexer.tcaSelect(2); // Select the channel connected to the gyroscope
 
     float deltaTime = (currentTime - *prevTime) / 1000.0;
 

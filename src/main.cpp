@@ -55,7 +55,6 @@ void loop()
     delay(100);
 }
 
-
 void initCells(Cell cells[16][16])
 {
     for (int i = 0; i < 16; i++)
