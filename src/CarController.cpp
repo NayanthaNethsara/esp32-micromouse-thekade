@@ -148,6 +148,20 @@ int CarController::getCurrentCell()
     }
 }
 
+void CarController::printTimeOfFlightValues()
+{
+    int frontDistance = timeOfFlight.getDistance(0); // Front sensor
+    int backDistance = timeOfFlight.getDistance(1);  // Back sensor
+
+    Serial.print("Front Sensor Distance: ");
+    Serial.print(frontDistance);
+    Serial.println(" mm");
+
+    Serial.print("Back Sensor Distance: ");
+    Serial.print(backDistance);
+    Serial.println(" mm");
+}
+
 // Functions to move the car in the maze
 void CarController::moveNorth(int direction)
 {

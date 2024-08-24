@@ -46,6 +46,9 @@ public:
     // Function to turn right by a specific angle
     void turnRight(int angle);
 
+    // Function to print Time-of-Flight sensor values
+    void printTimeOfFlightValues();
+    
     // Function to stop the car
     void stop();
 
