@@ -46,12 +46,12 @@ float GyroscopeSensor::readGyroZ()
 
     int16_t z = (zH << 8) | zL;
 
-    // Convert to degrees per second and subtract the offset
-    float zRotationRate = (z * 0.00875); // Adjust for offset
+    // Convert to degrees per second
+    float zRotationRate = z * 0.00875; // 0.00875 dps/LSB for 250 dps full scale
 
-    if (abs(zRotationRate) < 0.1)
+    if (abs(zRotationRate) < 1.1)
     {
-        zRotationRate = 0;
+        zRotationRate = 0.0;
     }
 
     return zRotationRate;
@@ -80,13 +80,6 @@ float GyroscopeSensor::getAngle(float currentTime, float *prevTime, float curren
     else if (angle < -180)
     {
         angle += 360;
-    }
-
-    // If the robot is moving forward and no significant rotation is detected,
-    // reset the angle to zero to prevent drift accumulation.
-    if (fabs(zRotationRate) < 0.1)
-    {
-        angle = 0;
     }
 
     return angle;
