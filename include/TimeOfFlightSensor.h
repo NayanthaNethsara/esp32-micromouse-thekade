@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <Adafruit_VL53L0X.h>
+#include "SerialMultiplexer.h"
 
 class TimeOfFlightSensor
 {
@@ -19,6 +20,8 @@ public:
 private:
     Adafruit_VL53L0X lox1;
     Adafruit_VL53L0X lox2;
+
+    SerialMultiplexer i2cMultiplexer; 
 
     const int cellSize = 10;
 

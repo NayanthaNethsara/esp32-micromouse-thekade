@@ -6,16 +6,6 @@
 // Constructor
 TimeOfFlightSensor::TimeOfFlightSensor() {}
 
-// TCA9548A channel select function
-void TimeOfFlightSensor::tcaSelect(uint8_t i)
-{
-    if (i > 7)
-        return;
-    Wire.beginTransmission(TCAADDR);
-    Wire.write(1 << i);
-    Wire.endTransmission();
-}
-
 // Initialize the sensors
 void TimeOfFlightSensor::init()
 {
@@ -23,7 +13,8 @@ void TimeOfFlightSensor::init()
     Wire.begin();
 
     // Initialize sensor 1 on channel 0
-    tcaSelect(0);
+    i2cMultiplexer.tcaSelect(0);
+
     if (!lox1.begin())
     {
         Serial.println(F("Failed to boot VL53L0X #1"));
@@ -32,7 +23,7 @@ void TimeOfFlightSensor::init()
     }
 
     // Initialize sensor 2 on channel 1
-    tcaSelect(1);
+    i2cMultiplexer.tcaSelect(1);
     if (!lox2.begin())
     {
         Serial.println(F("Failed to boot VL53L0X #2"));
@@ -49,12 +40,12 @@ int TimeOfFlightSensor::getDistance(uint8_t sensorId)
     // Select the appropriate sensor
     if (sensorId == 0)
     {
-        tcaSelect(0);
+        i2cMultiplexer.tcaSelect(0);
         lox1.rangingTest(&measure, false);
     }
     else if (sensorId == 1)
     {
-        tcaSelect(1);
+        i2cMultiplexer.tcaSelect(1);
         lox2.rangingTest(&measure, false);
     }
     else
