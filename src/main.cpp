@@ -32,7 +32,6 @@ void setup()
 {
     Serial.begin(115200);
     Wire.begin();
-    // // Gyroscope.init();
     Controller.init();
     TheKade.prevTime = millis();
 }
