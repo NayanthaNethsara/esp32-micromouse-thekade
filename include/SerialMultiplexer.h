@@ -2,13 +2,15 @@
 #define SERIAL_MULTIPLEXER_H
 #include <Arduino.h>
 
+#include <stdint.h>
+
 class SerialMultiplexer
 {
 public:
     void tcaSelect(int i);
 
 private:
-    const int TCAADDR = 0x70; // I2C address of the TCA9548A
+    const uint8_t TCAADDR = 0x70; // I2C address of the TCA9548A
 };
 
-#endif
+#endif // SERIAL_MULTIPLEXER_H
