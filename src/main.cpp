@@ -3,6 +3,7 @@
 #include "UltrasonicSensor.h"
 #include "GyroscopeSensor.h"
 #include "CarController.h"
+#include "SerialMultiplexer.h"
 #include <Structures.h>
 #include <climits>
 #include <queue>
