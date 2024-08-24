@@ -1,8 +1,9 @@
 #include "SerialMultiplexer.h"
+#include <Arduino.h>
 #include <Wire.h>
 
 // Function to select TCA9548A channel
-void SerialMultiplexer::tcaSelect(uint8_t i)
+void SerialMultiplexer::tcaSelect(int i)
 {
     if (i > 7)
         return;
