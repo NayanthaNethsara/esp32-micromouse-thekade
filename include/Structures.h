@@ -21,5 +21,4 @@ struct Cell
     bool east;
     bool south;
     bool west;
-    const int cellSize = 10;
 };

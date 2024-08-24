@@ -20,6 +20,8 @@ private:
     Adafruit_VL53L0X lox1;
     Adafruit_VL53L0X lox2;
 
+    const int cellSize = 10;
+
     // Helper function to select TCA9548A channel
     void tcaSelect(uint8_t i);
 };
