@@ -3,20 +3,22 @@
 
 #include <Arduino.h>
 #include "ultrasonicSensor.h"
+#include "GyroscopeSensor.h"
 
 class CarController
 {
 private:
-    int in1 = 32;
-    int in2 = 33;
-    int in3 = 26;
+    int in1 = 33; // right motor
+    int in2 = 32;
+    int in3 = 26; // left motor
     int in4 = 27;
-    int enA = 25;
-    int enB = 14;
+    int enA = 14; // right motor
+    int enB = 25; // left motor
     int baseSpeed;
     int correctionFactor;
     UltrasonicSensor leftUltrasonic{5, 18};
     UltrasonicSensor rightUltrasonic{19, 23};
+    GyroscopeSensor Gyroscope;
 
 public:
     // Constructor
@@ -28,6 +30,7 @@ public:
     // Function to move forward with balancing
     void forward(int leftDistance, int rightDistance);
 
+    void moveForward();
     // Function to test forward movement
     void forwardTest(int speed);
 

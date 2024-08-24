@@ -40,6 +40,7 @@ void loop()
 
     Controller.wallLeft();
     Controller.wallRight();
+    Controller.forwardTest(TheKade.speed);
 }
 
 void initCells(Cell cells[16][16])

@@ -10,14 +10,20 @@ CarController::CarController(int speed, int correctionFactor)
 // Initialize the motor pins
 void CarController::init()
 {
-    pinMode(in1, OUTPUT);
+    pinMode(in1, OUTPUT); // right motor
     pinMode(in2, OUTPUT);
-    pinMode(in3, OUTPUT);
+    pinMode(in3, OUTPUT); // left motor
     pinMode(in4, OUTPUT);
-    pinMode(enA, OUTPUT);
-    pinMode(enB, OUTPUT);
+    pinMode(enA, OUTPUT); // right motor
+    pinMode(enB, OUTPUT); // left motor
     leftUltrasonic.init();
     rightUltrasonic.init();
+}
+
+void CarController::moveForward()
+{
+    int leftDistance = rightUltrasonic.getDistance();
+    int rightDistance = leftUltrasonic.getDistance();
 }
 
 // Function to move forward with balancing
