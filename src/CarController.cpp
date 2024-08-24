@@ -21,7 +21,7 @@ void CarController::init()
     leftUltrasonic.init();
     rightUltrasonic.init();
     timeOfFlight.init();
-    Gyroscope.init();
+    gyroscope.init();
 }
 
 void CarController::moveForward()
@@ -41,7 +41,7 @@ void CarController::moveForward()
         int rightDistance = rightUltrasonic.getDistance(); // Distance from the right wall
 
         // Get the current angle from the gyroscope
-        currentAngle = Gyroscope.getAngle(currentTime, &prevTime, currentAngle);
+        currentAngle = gyroscope.getAngle(currentTime, &prevTime, currentAngle);
 
         // Desired distance from each wall is 2cm (with a tolerance of 1cm)
         int targetDistance = 2;
