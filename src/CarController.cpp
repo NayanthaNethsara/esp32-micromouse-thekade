@@ -24,6 +24,14 @@ void CarController::moveForward()
 {
     int leftDistance = rightUltrasonic.getDistance();
     int rightDistance = leftUltrasonic.getDistance();
+
+    digitalWrite(in1, HIGH);
+    digitalWrite(in2, LOW);
+    digitalWrite(in3, HIGH);
+    digitalWrite(in4, LOW);
+
+    analogWrite(enA, baseSpeed);
+    analogWrite(enB, baseSpeed);
 }
 
 // Function to move forward with balancing
