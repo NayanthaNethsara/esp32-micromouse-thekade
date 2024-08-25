@@ -41,39 +41,10 @@ void loop()
     initCells(cells);
 
     initFloodFill();
-
+    Cell wall = walls(TheKade.currentCoordinate);
     int currentFlood = flood[TheKade.currentCoordinate.x][TheKade.currentCoordinate.y];
-    while (currentFlood != 0)
-    {
-        currentFlood = flood[TheKade.currentCoordinate.x][TheKade.currentCoordinate.y];
-        Cell wall = walls(TheKade.currentCoordinate);
-        int bestDirection = checkAdjacent(TheKade.currentCoordinate, wall, direction);
 
-        if (bestDirection == -1)
-        {
-
-            initFloodFill();
-            bestDirection = checkAdjacent(TheKade.currentCoordinate, wall, direction);
-        }
-
-        switch (bestDirection)
-        {
-        case 0:
-            Controller.moveNorth(&direction, &TheKade.currentCoordinate.x, &TheKade.currentCoordinate.y);
-            break;
-        case 1:
-            Controller.moveEast(&direction, &TheKade.currentCoordinate.x, &TheKade.currentCoordinate.y);
-            break;
-        case 2:
-            Controller.moveSouth(&direction, &TheKade.currentCoordinate.x, &TheKade.currentCoordinate.y);
-            break;
-        case 3:
-            Controller.moveWest(&direction, &TheKade.currentCoordinate.x, &TheKade.currentCoordinate.y);
-            break;
-        default:
-            break;
-        }
-    }
+    delay(1000);
 }
 
 void initCells(Cell cells[16][16])
@@ -158,24 +129,56 @@ Cell walls(Coordinates currentPosition)
         wall.east = Controller.wallRight();
         wall.west = Controller.wallLeft();
         wall.south = Controller.wallBack();
+        Serial.print("North wall: ");
+        Serial.println(wall.north);
+        Serial.print("East wall: ");
+        Serial.println(wall.east);
+        Serial.print("West wall: ");
+        Serial.println(wall.west);
+        Serial.print("South wall: ");
+        Serial.println(wall.south);
         break;
     case 1: // Facing East
         wall.east = Controller.wallFront();
         wall.south = Controller.wallRight();
         wall.north = Controller.wallLeft();
         wall.west = Controller.wallBack();
+        Serial.print("East wall: ");
+        Serial.println(wall.east);
+        Serial.print("South wall: ");
+        Serial.println(wall.south);
+        Serial.print("North wall: ");
+        Serial.println(wall.north);
+        Serial.print("West wall: ");
+        Serial.println(wall.west);
         break;
     case 2: // Facing South
         wall.south = Controller.wallFront();
         wall.west = Controller.wallRight();
         wall.east = Controller.wallLeft();
         wall.north = Controller.wallBack();
+        Serial.print("South wall: ");
+        Serial.println(wall.south);
+        Serial.print("West wall: ");
+        Serial.println(wall.west);
+        Serial.print("East wall: ");
+        Serial.println(wall.east);
+        Serial.print("North wall: ");
+        Serial.println(wall.north);
         break;
     case 3: // Facing West
         wall.west = Controller.wallFront();
         wall.north = Controller.wallRight();
         wall.south = Controller.wallLeft();
         wall.east = Controller.wallBack();
+        Serial.print("West wall: ");
+        Serial.println(wall.west);
+        Serial.print("North wall: ");
+        Serial.println(wall.north);
+        Serial.print("South wall: ");
+        Serial.println(wall.south);
+        Serial.print("East wall: ");
+        Serial.println(wall.east);
         break;
     }
 

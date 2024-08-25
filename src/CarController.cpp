@@ -217,6 +217,8 @@ bool CarController::wallFront()
 bool CarController::wallLeft()
 {
     int distance = leftUltrasonic.getDistance();
+    Serial.print("Left Distance: ");
+    Serial.println(distance);
     return distance < leftThreshold; // Adjust threshold as needed
 }
 
