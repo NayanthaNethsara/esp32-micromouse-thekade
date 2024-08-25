@@ -190,9 +190,6 @@ void CarController::turnRight(float targetAngle)
 
         analogWrite(enA, rightSpeed);
         analogWrite(enB, leftSpeed);
-
-        // Small delay to allow sensor readings to update
-        delay(10);
     }
 
     // Stop the car after reaching the target angle
