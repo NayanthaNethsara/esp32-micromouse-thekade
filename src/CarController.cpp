@@ -209,7 +209,7 @@ void CarController::stop()
 // Function to identify if there is a wall in front
 bool CarController::wallFront()
 {
-    int distance = timeOfFlight.getDistance(0); // Use sensor 0 (front)
+    int distance = timeOfFlight.getDistance(1); // Use sensor 0 (front)
     return distance < frontThreshold;           // Adjust threshold as needed
 }
 
@@ -232,15 +232,15 @@ bool CarController::wallRight()
 // Function to identify if there is a wall at the back
 bool CarController::wallBack()
 {
-    int distance = timeOfFlight.getDistance(1); // Use sensor 1 (back)
+    int distance = timeOfFlight.getDistance(0); // Use sensor 1 (back)
     return distance < backThreshold;            // Adjust threshold as needed
 }
 
 // Function to calculate the current cell in the maze
 int CarController::getCurrentCell()
 {
-    int frontDistance = timeOfFlight.getDistance(0); // Front sensor
-    int backDistance = timeOfFlight.getDistance(1);  // Back sensor
+    int frontDistance = timeOfFlight.getDistance(1); // Front sensor
+    int backDistance = timeOfFlight.getDistance(0);  // Back sensor
 
     // Example logic to determine the current cell based on distances
     if (frontDistance < 100 && backDistance < 100)
@@ -263,8 +263,8 @@ int CarController::getCurrentCell()
 
 void CarController::printTimeOfFlightValues()
 {
-    int frontDistance = timeOfFlight.getDistance(0); // Front sensor
-    int backDistance = timeOfFlight.getDistance(1);  // Back sensor
+    int frontDistance = timeOfFlight.getDistance(1); // Front sensor
+    int backDistance = timeOfFlight.getDistance(0);  // Back sensor
 
     Serial.print("Front Sensor Distance: ");
     Serial.print(frontDistance / 10);
