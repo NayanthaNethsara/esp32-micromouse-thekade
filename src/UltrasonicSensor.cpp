@@ -7,6 +7,11 @@ void UltrasonicSensor::init()
 {
     pinMode(trigPin, OUTPUT);
     pinMode(echoPin, INPUT);
+    Serial.println("Ultrasonic sensor initialized");
+    Serial.print("Trig pin: ");
+    Serial.println(trigPin);
+    Serial.print("Echo pin: ");
+    Serial.println(echoPin);
 }
 
 float UltrasonicSensor::getDistance()
