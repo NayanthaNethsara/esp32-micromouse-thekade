@@ -8,13 +8,16 @@
 #include <climits>
 #include <queue>
 #include <vector>
+#include <SharpIR.h>
 
 using namespace std;
 
-Car TheKade = {150, 0, 0, {15, 0}, 0, 0, 1.0};
+Car TheKade = {60, 0, 0, {15, 0}, 0, 0, 1.0};
 
 GyroscopeSensor Gyroscope;
 TimeOfFlightSensor TimeOfFlight;
+SharpIR Sharp;
+
 CarController Controller(TheKade.speed, TheKade.correctionFactor); // Assuming a base speed of 150 and Kp gain of 1.0
 
 int dx[4] = {-1, 1, 0, 0};
@@ -34,25 +37,14 @@ void setup()
     Wire.begin();
     Controller.init();
     TheKade.prevTime = millis();
+    Sharp.init();
+    TimeOfFlight.init();
 }
 
 void loop()
 {
-    static float prevTime = millis(); // To store the previous time
-    static float currentAngle = 0;    // To store the current angle
 
-    // Get the current time
-    unsigned long currentTime = millis();
-
-    // Get the current angle from the gyroscope
-    currentAngle = Gyroscope.getAngle(currentTime, &prevTime, currentAngle);
-
-    // Print the current angle
-    Serial.print("Current Angle: ");
-    Serial.println(currentAngle);
-
-    // Small delay to avoid flooding the serial monitor
-    delay(100);
+    Controller.turnRight(90);
 }
 
 void initCells(Cell cells[16][16])

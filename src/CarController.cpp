@@ -26,100 +26,51 @@ void CarController::init()
 
 void CarController::moveForward()
 {
-    static float prevTime = millis();
 
-    static float currentAngle = 0;
+    int leftDistance = leftUltrasonic.getDistance();   // Distance from the left wall
+    int rightDistance = rightUltrasonic.getDistance(); // Distance from the right wall
 
-    unsigned long startTime = millis();
-    unsigned long duration = 5000; // 5 seconds duration
+    // Desired distance from each wall is 2cm
+    int targetDistance = 2;
+    int tolerance = 1; // Small tolerance
 
-    while (millis() - startTime < duration)
+    int leftSpeed = baseSpeed;
+    int rightSpeed = baseSpeed;
+
+    // Adjust speed based on the distance from the walls
+    if (leftDistance < rightDistance - tolerance)
     {
-        unsigned long currentTime = millis();
-
-        int leftDistance = leftUltrasonic.getDistance();   // Distance from the left wall
-        int rightDistance = rightUltrasonic.getDistance(); // Distance from the right wall
-
-        // Get the current angle from the gyroscope
-        currentAngle = gyroscope.getAngle(currentTime, &prevTime, currentAngle);
-
-        // Desired distance from each wall is 2cm (with a tolerance of 1cm)
-        int targetDistance = 2;
-        int tolerance = 1;
-
-        int leftSpeed = baseSpeed;
-        int rightSpeed = baseSpeed;
-
-        // Adjust speed based on the distance from the walls
-        if (leftDistance < targetDistance - tolerance)
-        {
-            // Too close to the left wall, slow down left motor or speed up right motor
-            leftSpeed = baseSpeed - 50;
-            rightSpeed = baseSpeed + 50;
-        }
-        else if (leftDistance > targetDistance + tolerance)
-        {
-            // Too far from the left wall, speed up left motor or slow down right motor
-            leftSpeed = baseSpeed + 50;
-            rightSpeed = baseSpeed - 50;
-        }
-
-        if (rightDistance < targetDistance - tolerance)
-        {
-            // Too close to the right wall, slow down right motor or speed up left motor
-            leftSpeed = baseSpeed + 50;
-            rightSpeed = baseSpeed - 50;
-        }
-        else if (rightDistance > targetDistance + tolerance)
-        {
-            // Too far from the right wall, speed up right motor or slow down left motor
-            leftSpeed = baseSpeed - 50;
-            rightSpeed = baseSpeed + 50;
-        }
-
-        // Adjust speed based on the gyroscope angle to maintain straight movement
-        if (currentAngle > 5) // Adjust the threshold angle as needed
-        {
-            // If the car is veering to the right, correct by slowing down the right motor
-            leftSpeed += 50;
-            rightSpeed -= 50;
-        }
-        else if (currentAngle < -5) // Adjust the threshold angle as needed
-        {
-            // If the car is veering to the left, correct by slowing down the left motor
-            leftSpeed -= 50;
-            rightSpeed += 50;
-        }
-
-        Serial.print("Angle: ");
-        Serial.println(currentAngle);
-        Serial.print("Left Distance: ");
-        Serial.println(leftDistance);
-        Serial.print("Right Distance: ");
-        Serial.println(rightDistance);
-        Serial.print("Left Speed: ");
-        Serial.println(leftSpeed);
-        Serial.print("Right Speed: ");
-        Serial.println(rightSpeed);
-
-        // Move the car forward with the adjusted speeds
-        // digitalWrite(in1, HIGH);
-        // digitalWrite(in2, LOW);
-        // digitalWrite(in3, HIGH);
-        // digitalWrite(in4, LOW);
-
-        // analogWrite(enA, leftSpeed);
-        // analogWrite(enB, rightSpeed);
-
-        // Small delay to allow sensor readings to update
-        delay(10);
+        // Too close to the left wall, speed up right motor slightly
+        leftSpeed = baseSpeed;
+        rightSpeed = baseSpeed + 15; // Small adjustment
+    }
+    else if (leftDistance > rightDistance + tolerance)
+    {
+        // Too close to the right wall, speed up left motor slightly
+        leftSpeed = baseSpeed + 15; // Small adjustment
+        rightSpeed = baseSpeed;
     }
 
-    // Stop the car after 5 seconds
-    digitalWrite(in1, LOW);
+    Serial.print("Left Distance: ");
+    Serial.println(leftDistance);
+    Serial.print("Right Distance: ");
+    Serial.println(rightDistance);
+    Serial.print("Left Speed: ");
+    Serial.println(leftSpeed);
+    Serial.print("Right Speed: ");
+    Serial.println(rightSpeed);
+
+    // Move the car forward with the adjusted speeds
+    digitalWrite(in1, HIGH);
     digitalWrite(in2, LOW);
-    digitalWrite(in3, LOW);
+    digitalWrite(in3, HIGH);
     digitalWrite(in4, LOW);
+
+    analogWrite(enA, rightSpeed);
+    analogWrite(enB, leftSpeed);
+
+    // Small delay to allow sensor readings to update
+    delay(10);
 }
 
 // Function to move forward with balancing
@@ -154,31 +105,101 @@ void CarController::forwardTest(int speed)
 }
 
 // Function to turn left by a specific angle
-void CarController::turnLeft(int angle)
+void CarController::turnLeft(float targetAngle)
 {
-    int turnSpeed = map(angle, 0, 180, baseSpeed, 0);
+    static float prevTime = millis();
+    static float currentAngle = 0;
 
+    // Keep turning until the car reaches the target angle
+    while (currentAngle > -targetAngle)
+    {
+        unsigned long currentTime = millis();
+
+        // Get the current angle from the gyroscope
+        currentAngle = gyroscope.getAngle(currentTime, &prevTime, currentAngle);
+
+        // Adjust motor speeds to turn left in place
+        int leftSpeed = baseSpeed;
+        int rightSpeed = baseSpeed;
+
+        // To turn left on the spot, the right motor runs forward, and the left motor runs backward
+        leftSpeed = baseSpeed;
+        rightSpeed = baseSpeed;
+
+        Serial.print("Current Angle: ");
+        Serial.println(currentAngle);
+        Serial.print("Left Speed: ");
+        Serial.println(leftSpeed);
+        Serial.print("Right Speed: ");
+        Serial.println(rightSpeed);
+
+        // Execute the turn
+        digitalWrite(in1, LOW);
+        digitalWrite(in2, HIGH); // Left motor backward
+        digitalWrite(in3, HIGH);
+        digitalWrite(in4, LOW); // Right motor forward
+
+        analogWrite(enA, rightSpeed);
+        analogWrite(enB, leftSpeed);
+
+        // Small delay to allow sensor readings to update
+        delay(100);
+    }
+
+    // Stop the car after reaching the target angle
     digitalWrite(in1, LOW);
-    digitalWrite(in2, HIGH); // Reverse left motor
-    digitalWrite(in3, HIGH);
-    digitalWrite(in4, LOW); // Forward right motor
-
-    analogWrite(enA, turnSpeed);
-    analogWrite(enB, baseSpeed);
+    digitalWrite(in2, LOW);
+    digitalWrite(in3, LOW);
+    digitalWrite(in4, LOW);
 }
 
 // Function to turn right by a specific angle
-void CarController::turnRight(int angle)
+void CarController::turnRight(float targetAngle)
 {
-    int turnSpeed = map(angle, 0, 180, baseSpeed, 0);
+    static float prevTime = millis();
+    static float currentAngle = 0;
 
-    digitalWrite(in1, HIGH);
-    digitalWrite(in2, LOW); // Forward left motor
+    // Keep turning until the car reaches the target angle
+    while (currentAngle < targetAngle)
+    {
+        unsigned long currentTime = millis();
+
+        // Get the current angle from the gyroscope
+        currentAngle = gyroscope.getAngle(currentTime, &prevTime, currentAngle);
+
+        // Adjust motor speeds to turn right in place
+        int leftSpeed = baseSpeed;
+        int rightSpeed = baseSpeed;
+
+        // To turn right on the spot, the left motor runs forward, and the right motor runs backward
+        leftSpeed = baseSpeed;
+        rightSpeed = baseSpeed;
+
+        Serial.print("Current Angle: ");
+        Serial.println(currentAngle);
+        Serial.print("Left Speed: ");
+        Serial.println(leftSpeed);
+        Serial.print("Right Speed: ");
+        Serial.println(rightSpeed);
+
+        // Execute the turn
+        digitalWrite(in1, HIGH);
+        digitalWrite(in2, LOW); // Left motor forward
+        digitalWrite(in3, LOW);
+        digitalWrite(in4, HIGH); // Right motor backward
+
+        analogWrite(enA, rightSpeed);
+        analogWrite(enB, leftSpeed);
+
+        // Small delay to allow sensor readings to update
+        delay(10);
+    }
+
+    // Stop the car after reaching the target angle
+    digitalWrite(in1, LOW);
+    digitalWrite(in2, LOW);
     digitalWrite(in3, LOW);
-    digitalWrite(in4, HIGH); // Reverse right motor
-
-    analogWrite(enA, baseSpeed);
-    analogWrite(enB, turnSpeed);
+    digitalWrite(in4, LOW);
 }
 
 // Function to stop the car

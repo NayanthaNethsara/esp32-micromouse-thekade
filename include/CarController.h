@@ -41,14 +41,14 @@ public:
     void forwardTest(int speed);
 
     // Function to turn left by a specific angle
-    void turnLeft(int angle);
+    void turnLeft(float targetAngle);
 
     // Function to turn right by a specific angle
-    void turnRight(int angle);
+    void turnRight(float targetAngle);
 
     // Function to print Time-of-Flight sensor values
     void printTimeOfFlightValues();
-    
+
     // Function to stop the car
     void stop();
 

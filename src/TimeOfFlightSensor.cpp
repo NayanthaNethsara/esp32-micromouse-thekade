@@ -57,7 +57,7 @@ int TimeOfFlightSensor::getDistance(uint8_t sensorId)
     // Check if the measurement is valid
     if (measure.RangeStatus != 4)
     {
-        return measure.RangeMilliMeter;
+        return measure.RangeMilliMeter / 10;
     }
     else
     {
