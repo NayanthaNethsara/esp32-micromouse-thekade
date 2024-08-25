@@ -20,7 +20,7 @@ int dy[4] = {0, 0, -1, 1};
 // Initialize a 2D array of Cell objects
 Cell cells[16][16];
 int flood[16][16];
-
+UltrasonicSensor ultrasonicSensor(19, 23);
 void initCells(Cell cells[16][16]);
 void initFloodFill();
 Cell walls(Coordinates currentPosition);
@@ -31,15 +31,15 @@ void setup()
     Serial.begin(115200);
     // Wire.begin();
     // // Gyroscope.init();
-    Controller.init();
     TheKade.prevTime = millis();
+    ultrasonicSensor.init();
 }
 
 void loop()
 {
 
-    Controller.wallLeft();
-    Controller.wallRight();
+    Serial.print("Distance Left: ");
+    Serial.println(ultrasonicSensor.getDistance());
 }
 
 void initCells(Cell cells[16][16])

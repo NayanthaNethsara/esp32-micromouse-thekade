@@ -16,8 +16,7 @@ void CarController::init()
     pinMode(in4, OUTPUT);
     pinMode(enA, OUTPUT);
     pinMode(enB, OUTPUT);
-    leftUltrasonic.init();
-    rightUltrasonic.init();
+
 }
 
 // Function to move forward with balancing
