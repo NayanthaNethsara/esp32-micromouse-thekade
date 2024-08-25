@@ -13,10 +13,7 @@
 using namespace std;
 
 Car TheKade = {60, 0, 0, {15, 0}, 0, 0, 1.0};
-
-GyroscopeSensor Gyroscope;
-TimeOfFlightSensor TimeOfFlight;
-SharpIR Sharp;
+int direction = 0;
 
 CarController Controller(TheKade.speed, TheKade.correctionFactor); // Assuming a base speed of 150 and Kp gain of 1.0
 
@@ -37,14 +34,46 @@ void setup()
     Wire.begin();
     Controller.init();
     TheKade.prevTime = millis();
-    Sharp.init();
-    TimeOfFlight.init();
 }
 
 void loop()
 {
+    initCells(cells);
 
-    Controller.turnRight(90);
+    initFloodFill();
+
+    int currentFlood = flood[TheKade.currentCoordinate.x][TheKade.currentCoordinate.y];
+    while (currentFlood != 0)
+    {
+        currentFlood = flood[TheKade.currentCoordinate.x][TheKade.currentCoordinate.y];
+        Cell wall = walls(TheKade.currentCoordinate);
+        int bestDirection = checkAdjacent(TheKade.currentCoordinate, wall, direction);
+
+        if (bestDirection == -1)
+        {
+
+            initFloodFill();
+            bestDirection = checkAdjacent(TheKade.currentCoordinate, wall, direction);
+        }
+
+        switch (bestDirection)
+        {
+        case 0:
+            Controller.moveNorth(&direction, &TheKade.currentCoordinate.x, &TheKade.currentCoordinate.y);
+            break;
+        case 1:
+            Controller.moveEast(&direction, &TheKade.currentCoordinate.x, &TheKade.currentCoordinate.y);
+            break;
+        case 2:
+            Controller.moveSouth(&direction, &TheKade.currentCoordinate.x, &TheKade.currentCoordinate.y);
+            break;
+        case 3:
+            Controller.moveWest(&direction, &TheKade.currentCoordinate.x, &TheKade.currentCoordinate.y);
+            break;
+        default:
+            break;
+        }
+    }
 }
 
 void initCells(Cell cells[16][16])

@@ -17,16 +17,15 @@ void CarController::init()
     pinMode(enA, OUTPUT); // right motor
     pinMode(enB, OUTPUT); // left motor
 
-    // Initialize the sensors
+    // Initialize the gyroscope
+    gyroscope.init();
     leftUltrasonic.init();
     rightUltrasonic.init();
     timeOfFlight.init();
-    gyroscope.init();
 }
-
 void CarController::moveForward()
 {
-
+    // Get distance readings
     int leftDistance = leftUltrasonic.getDistance();   // Distance from the left wall
     int rightDistance = rightUltrasonic.getDistance(); // Distance from the right wall
 
@@ -34,21 +33,25 @@ void CarController::moveForward()
     int targetDistance = 2;
     int tolerance = 1; // Small tolerance
 
-    int leftSpeed = baseSpeed;
-    int rightSpeed = baseSpeed;
+    // Base speeds for motors
+    int baseSpeed = 150; // Adjust this value based on your motor specs
+    float rightSpeedRatio = 10.0;
+    float leftSpeedRatio = 8.7;
+
+    // Calculate adjusted speeds
+    int leftSpeed = baseSpeed * (leftSpeedRatio / 10.0);
+    int rightSpeed = baseSpeed * (rightSpeedRatio / 10.0);
 
     // Adjust speed based on the distance from the walls
     if (leftDistance < rightDistance - tolerance)
     {
-        // Too close to the left wall, speed up right motor slightly
-        leftSpeed = baseSpeed;
-        rightSpeed = baseSpeed + 15; // Small adjustment
+        // Too close to the left wall, increase right motor speed slightly
+        rightSpeed = baseSpeed * (rightSpeedRatio / 10.0) + 15;
     }
     else if (leftDistance > rightDistance + tolerance)
     {
-        // Too close to the right wall, speed up left motor slightly
-        leftSpeed = baseSpeed + 15; // Small adjustment
-        rightSpeed = baseSpeed;
+        // Too close to the right wall, increase left motor speed slightly
+        leftSpeed = baseSpeed * (leftSpeedRatio / 10.0) + 15;
     }
 
     Serial.print("Left Distance: ");
@@ -74,22 +77,18 @@ void CarController::moveForward()
 }
 
 // Function to move forward with balancing
-void CarController::forward(int leftDistance, int rightDistance)
+void CarController::forward()
 {
-    int error = leftDistance - rightDistance;
-    int speedLeft = baseSpeed - (error * correctionFactor);
-    int speedRight = baseSpeed + (error * correctionFactor);
-
-    speedLeft = constrain(speedLeft, 0, 255);
-    speedRight = constrain(speedRight, 0, 255);
 
     digitalWrite(in1, HIGH);
     digitalWrite(in2, LOW);
     digitalWrite(in3, HIGH);
     digitalWrite(in4, LOW);
 
-    analogWrite(enA, speedLeft);
-    analogWrite(enB, speedRight);
+    analogWrite(enA, 100);
+    analogWrite(enB, 87);
+
+    delay(1000);
 }
 
 // Function to test forward movement
@@ -100,18 +99,18 @@ void CarController::forwardTest(int speed)
     digitalWrite(in3, HIGH);
     digitalWrite(in4, LOW);
 
-    analogWrite(enA, speed);
-    analogWrite(enB, speed);
+    analogWrite(enA, 60);
+    analogWrite(enB, 60);
 }
 
 // Function to turn left by a specific angle
 void CarController::turnLeft(float targetAngle)
 {
-    static float prevTime = millis();
-    static float currentAngle = 0;
+    float prevTime = millis();
+    float currentAngle = 0;
 
     // Keep turning until the car reaches the target angle
-    while (currentAngle > -targetAngle)
+    while (abs(currentAngle) < abs(targetAngle))
     {
         unsigned long currentTime = millis();
 
@@ -126,12 +125,10 @@ void CarController::turnLeft(float targetAngle)
         leftSpeed = baseSpeed;
         rightSpeed = baseSpeed;
 
-        Serial.print("Current Angle: ");
-        Serial.println(currentAngle);
-        Serial.print("Left Speed: ");
-        Serial.println(leftSpeed);
-        Serial.print("Right Speed: ");
-        Serial.println(rightSpeed);
+        // Serial.print("Left Speed: ");
+        // Serial.println(leftSpeed);
+        // Serial.print("Right Speed: ");
+        // Serial.println(rightSpeed);
 
         // Execute the turn
         digitalWrite(in1, LOW);
@@ -142,8 +139,10 @@ void CarController::turnLeft(float targetAngle)
         analogWrite(enA, rightSpeed);
         analogWrite(enB, leftSpeed);
 
+        Serial.print("Current Angle: ");
+        Serial.println(currentAngle);
+
         // Small delay to allow sensor readings to update
-        delay(100);
     }
 
     // Stop the car after reaching the target angle
@@ -156,8 +155,8 @@ void CarController::turnLeft(float targetAngle)
 // Function to turn right by a specific angle
 void CarController::turnRight(float targetAngle)
 {
-    static float prevTime = millis();
-    static float currentAngle = 0;
+    float prevTime = millis();
+    float currentAngle = 0;
 
     // Keep turning until the car reaches the target angle
     while (currentAngle < targetAngle)
@@ -175,12 +174,10 @@ void CarController::turnRight(float targetAngle)
         leftSpeed = baseSpeed;
         rightSpeed = baseSpeed;
 
-        Serial.print("Current Angle: ");
-        Serial.println(currentAngle);
-        Serial.print("Left Speed: ");
-        Serial.println(leftSpeed);
-        Serial.print("Right Speed: ");
-        Serial.println(rightSpeed);
+        // Serial.print("Left Speed: ");
+        // Serial.println(leftSpeed);
+        // Serial.print("Right Speed: ");
+        // Serial.println(rightSpeed);
 
         // Execute the turn
         digitalWrite(in1, HIGH);
@@ -190,6 +187,9 @@ void CarController::turnRight(float targetAngle)
 
         analogWrite(enA, rightSpeed);
         analogWrite(enB, leftSpeed);
+
+        Serial.print("Current Angle: ");
+        Serial.println(currentAngle);
     }
 
     // Stop the car after reaching the target angle
@@ -274,94 +274,107 @@ void CarController::printTimeOfFlightValues()
 }
 
 // Functions to move the car in the maze
-void CarController::moveNorth(int direction)
+void CarController::moveNorth(int *direction, int *currentCoordinateX, int *currentCoordinateY)
 {
-    if (direction == 0)
+    if (*direction == 0)
     {
-        forwardTest(baseSpeed); // Move forward
+        forward();
     }
-    else if (direction == 1)
+    else if (*direction == 1)
     {
-        turnLeft(90);
-        forwardTest(baseSpeed);
+        turnLeft(65);
+        forward();
     }
-    else if (direction == 2)
+    else if (*direction == 2)
     {
-        turnLeft(180);
-        forwardTest(baseSpeed);
+        turnLeft(65);
+        turnLeft(65);
+        forward();
     }
-    else if (direction == 3)
+    else if (*direction == 3)
     {
-        turnRight(90);
-        forwardTest(baseSpeed);
+        turnRight(65);
+        forward();
     }
+    *currentCoordinateX = *currentCoordinateX - 1;
+    *direction = 0;
 }
 
-void CarController::moveEast(int direction)
+void CarController::moveEast(int *direction, int *currentCoordinateX, int *currentCoordinateY)
 {
-    if (direction == 0)
+    if (*direction == 0)
     {
-        turnRight(90);
-        forwardTest(baseSpeed);
+        turnRight(65);
+        forward();
     }
-    else if (direction == 1)
+    else if (*direction == 1)
     {
-        forwardTest(baseSpeed);
+        forward();
     }
-    else if (direction == 2)
+    else if (*direction == 2)
     {
-        turnLeft(90);
-        forwardTest(baseSpeed);
+        turnLeft(65);
+        forward();
     }
-    else if (direction == 3)
+    else if (*direction == 3)
     {
-        turnLeft(180);
-        forwardTest(baseSpeed);
+        turnLeft(65);
+        turnLeft(65);
+        forward();
     }
+    *currentCoordinateY = *currentCoordinateY + 1;
+    *direction = 1;
 }
 
-void CarController::moveSouth(int direction)
+void CarController::moveSouth(int *direction, int *currentCoordinateX, int *currentCoordinateY)
 {
-    if (direction == 0)
+    if (*direction == 0)
     {
-        turnLeft(180);
-        forwardTest(baseSpeed);
+        turnLeft(65);
+        turnLeft(65);
+        forward();
     }
-    else if (direction == 1)
+    else if (*direction == 1)
     {
-        turnRight(90);
-        forwardTest(baseSpeed);
+        turnRight(65);
+        forward();
     }
-    else if (direction == 2)
+    else if (*direction == 2)
     {
-        forwardTest(baseSpeed);
+        forward();
     }
-    else if (direction == 3)
+    else if (*direction == 3)
     {
-        turnLeft(90);
-        forwardTest(baseSpeed);
+        turnLeft(65);
+        forward();
     }
+    *currentCoordinateX = *currentCoordinateX + 1;
+    *direction = 2;
 }
 
-void CarController::moveWest(int direction)
+void CarController::moveWest(int *direction, int *currentCoordinateX, int *currentCoordinateY)
 {
-    if (direction == 0)
+
+    if (*direction == 0)
     {
-        turnLeft(90);
-        forwardTest(baseSpeed);
+        turnLeft(65);
+        forward();
     }
-    else if (direction == 1)
+    else if (*direction == 1)
     {
-        turnLeft(180);
-        forwardTest(baseSpeed);
+        turnLeft(65);
+        turnLeft(65);
+        forward();
     }
-    else if (direction == 2)
+    else if (*direction == 2)
     {
-        turnRight(90);
-        forwardTest(baseSpeed);
+        turnRight(65);
+        forward();
     }
-    else if (direction == 3)
+    else if (*direction == 3)
     {
-        forwardTest(baseSpeed);
+        forward();
     }
+    *currentCoordinateY = *currentCoordinateY - 1;
+    *direction = 3;
 }

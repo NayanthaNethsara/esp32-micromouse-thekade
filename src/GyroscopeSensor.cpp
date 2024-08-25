@@ -63,7 +63,7 @@ float GyroscopeSensor::getAngle(float currentTime, float *prevTime, float curren
 
     float deltaTime = (currentTime - *prevTime) / 1000.0;
 
-    static float angle = currentAngle;
+    float angle = currentAngle;
     *prevTime = millis();
 
     // Read gyroscope data

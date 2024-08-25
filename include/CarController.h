@@ -17,10 +17,10 @@ private:
     int enB = 25; // left motor
     int baseSpeed;
     int correctionFactor;
-    int frontThreshold = 100;
-    int leftThreshold = 100;
-    int rightThreshold = 100;
-    int backThreshold = 100;
+    int frontThreshold = 10;
+    int leftThreshold = 5;
+    int rightThreshold = 5;
+    int backThreshold = 10;
     UltrasonicSensor leftUltrasonic{5, 18};
     UltrasonicSensor rightUltrasonic{19, 23};
     GyroscopeSensor gyroscope;
@@ -34,7 +34,7 @@ public:
     void init();
 
     // Function to move forward with balancing
-    void forward(int leftDistance, int rightDistance);
+    void forward();
 
     void moveForward();
     // Function to test forward movement
@@ -62,10 +62,10 @@ public:
     int getCurrentCell();
 
     // Functions to move the car in the maze
-    void moveNorth(int direction);
-    void moveEast(int direction);
-    void moveSouth(int direction);
-    void moveWest(int direction);
+    void moveNorth(int *direction, int *currentCoordinateX, int *currentCoordinateY);
+    void moveEast(int *direction, int *currentCoordinateX, int *currentCoordinateY);
+    void moveSouth(int *direction, int *currentCoordinateX, int *currentCoordinateY);
+    void moveWest(int *direction, int *currentCoordinateX, int *currentCoordinateY);
 };
 
 #endif // CARCONTROLLER_H
