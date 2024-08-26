@@ -41,8 +41,43 @@ void loop()
     initCells(cells);
 
     initFloodFill();
-    Cell wall = walls(TheKade.currentCoordinate);
+
     int currentFlood = flood[TheKade.currentCoordinate.x][TheKade.currentCoordinate.y];
+    while (currentFlood != 0)
+    {
+        currentFlood = flood[TheKade.currentCoordinate.x][TheKade.currentCoordinate.y];
+        Cell wall = walls(TheKade.currentCoordinate);
+        int bestDirection = checkAdjacent(TheKade.currentCoordinate, wall, direction);
+
+        if (bestDirection == -1)
+        {
+
+            initFloodFill();
+            bestDirection = checkAdjacent(TheKade.currentCoordinate, wall, direction);
+        }
+
+        Serial.print("Best Direction: ");
+        Serial.println(bestDirection);
+        // break;
+
+        switch (bestDirection)
+        {
+        case 0:
+            Controller.moveNorth(&direction, &TheKade.currentCoordinate.x, &TheKade.currentCoordinate.y);
+            break;
+        case 1:
+            Controller.moveEast(&direction, &TheKade.currentCoordinate.x, &TheKade.currentCoordinate.y);
+            break;
+        case 2:
+            Controller.moveSouth(&direction, &TheKade.currentCoordinate.x, &TheKade.currentCoordinate.y);
+            break;
+        case 3:
+            Controller.moveWest(&direction, &TheKade.currentCoordinate.x, &TheKade.currentCoordinate.y);
+            break;
+        default:
+            break;
+        }
+    }
 
     delay(1000);
 }

@@ -34,9 +34,9 @@ void CarController::moveForward()
     int tolerance = 1; // Small tolerance
 
     // Base speeds for motors
-    int baseSpeed = 150; // Adjust this value based on your motor specs
+    int baseSpeed = 60; // Adjust this value based on your motor specs
     float rightSpeedRatio = 10.0;
-    float leftSpeedRatio = 8.7;
+    float leftSpeedRatio = 10.0;
 
     // Calculate adjusted speeds
     int leftSpeed = baseSpeed * (leftSpeedRatio / 10.0);
@@ -80,13 +80,32 @@ void CarController::moveForward()
 void CarController::forward()
 {
 
-    digitalWrite(in1, HIGH);
-    digitalWrite(in2, LOW);
-    digitalWrite(in3, HIGH);
-    digitalWrite(in4, LOW);
+    int frontStartDistance = timeOfFlight.getDistance(1);
+    int backStartDistance = timeOfFlight.getDistance(0);
 
-    analogWrite(enA, 100);
-    analogWrite(enB, 87);
+    bool flag = true;
+
+    while (flag)
+    {
+        int frontDistance = timeOfFlight.getDistance(1);
+        int backDistance = timeOfFlight.getDistance(0);
+
+        // flag = frontStartDistance - 15 < frontDistance;
+        //  moveForward();
+        digitalWrite(in1, HIGH);
+        digitalWrite(in2, LOW);
+        digitalWrite(in3, HIGH);
+        digitalWrite(in4, LOW);
+
+        analogWrite(enA, 60);
+        analogWrite(enB, 60);
+
+        delay(700);
+        flag = false;
+    }
+
+    analogWrite(enA, 0);
+    analogWrite(enB, 0);
 
     delay(1000);
 }
@@ -110,7 +129,7 @@ void CarController::turnLeft(float targetAngle)
     float currentAngle = 0;
 
     // Keep turning until the car reaches the target angle
-    while (abs(currentAngle) < abs(targetAngle))
+    while (abs(currentAngle) < abs(targetAngle - 20))
     {
         unsigned long currentTime = millis();
 
@@ -159,7 +178,7 @@ void CarController::turnRight(float targetAngle)
     float currentAngle = 0;
 
     // Keep turning until the car reaches the target angle
-    while (currentAngle < targetAngle)
+    while (currentAngle < targetAngle - 20)
     {
         unsigned long currentTime = millis();
 
@@ -210,7 +229,9 @@ void CarController::stop()
 bool CarController::wallFront()
 {
     int distance = timeOfFlight.getDistance(1); // Use sensor 0 (front)
-    return distance < frontThreshold;           // Adjust threshold as needed
+    Serial.print("Front Distance: ");
+    Serial.println(distance);
+    return distance < frontThreshold; // Adjust threshold as needed
 }
 
 // Function to identify if there is a wall on the left
@@ -226,6 +247,8 @@ bool CarController::wallLeft()
 bool CarController::wallRight()
 {
     int distance = rightUltrasonic.getDistance();
+    Serial.print("Right Distance: ");
+    Serial.println(distance);
     return distance < rightThreshold; // Adjust threshold as needed
 }
 
@@ -233,7 +256,9 @@ bool CarController::wallRight()
 bool CarController::wallBack()
 {
     int distance = timeOfFlight.getDistance(0); // Use sensor 1 (back)
-    return distance < backThreshold;            // Adjust threshold as needed
+    Serial.print("Back Distance: ");
+    Serial.println(distance);
+    return distance < backThreshold; // Adjust threshold as needed
 }
 
 // Function to calculate the current cell in the maze

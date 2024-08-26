@@ -21,8 +21,8 @@ private:
     int leftThreshold = 5;
     int rightThreshold = 5;
     int backThreshold = 10;
-    UltrasonicSensor leftUltrasonic{5, 18};
-    UltrasonicSensor rightUltrasonic{19, 23};
+    UltrasonicSensor leftUltrasonic{19, 23};
+    UltrasonicSensor rightUltrasonic{5, 18};
     GyroscopeSensor gyroscope;
     TimeOfFlightSensor timeOfFlight;
 
